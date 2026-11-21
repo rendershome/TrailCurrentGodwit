@@ -16,7 +16,7 @@ I've read through `radio/` and the HMI radio code. The DSP core is in good shape
 - RDS/RBDS:
   - complete the RBDS PTY table (24 Spanish Talk, 25 Spanish Music, 26 Hip Hop, 30 Emergency Test, 31 Emergency);
   - stop preferring the PI-derived call sign over the PS. NRSC-G300-C notes that many U.S. stations' PI codes aren't derived from their call letters, and recommends receivers use RT+ StationName.Short rather than back-calculating. Until RT+ is decoded, the PS, which NRSC-4-B notes may carry the call letters or a slogan, is the safer name to show;
-  - complete the NRSC-4-B PI-to-call rules (the 3-letter table, the A___ and AF__ forms). Canadian (0xC___) and Mexican (0xF___) PI codes aren't derived from call letters, so no call sign should be computed for them;
+  - complete the NRSC-4-B PI-to-call rules (the 3-letter table, the A___ and AF__ forms), and add Canada. ISED's PI-code page sets Canada's range as C000–CFFF (CBC networks B_02–B_09). The CBC-built calculator ISED hosts there uses a formula that can be reversed: C101–CEC3 map back to CF/CH/CI/CJ/CK call signs, including 3-letter calls. I checked it against off-air captures of Calgary stations (C185 → CFEX, CB42 → CJSW). Mexican (0xF___) codes have no published method, so no call sign should be computed for them;
   - decode the RDS character set, so accented letters show.
 - The voice assistant accepts 87.5–108 MHz in 0.1 MHz steps, while `godwit-radio` only tunes 87.9–107.9 MHz on the 200 kHz raster, so "set the radio to 87.5" shows a frequency the tuner ignores. One band definition shared by all three would fix it.
 - Some doc fixes (the librtlsdr licence in Legal.js, which apps share the dongle, supported dongles, FM antenna notes).

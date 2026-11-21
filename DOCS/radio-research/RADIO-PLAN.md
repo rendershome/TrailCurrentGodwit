@@ -37,7 +37,7 @@ Item numbers match the report's work-plan tables.
 - [ ] 1.3 **PR** Per-sample stereo blend ramp (no 80 ms steps). *S*
 - [ ] 1.4 **PR** Complete RBDS PTY table: 24 Spanish Talk, 25 Spanish Music, 26 Hip Hop, 30 Test, 31 Alert. *S*
 - [ ] 1.5 **PR** Stop preferring the PI-derived call sign over PS. Verified: NRSC-G300-C §5.1 recommends RT+ StationName.Short instead of back-calculating from PI (not PS); NRSC-4-B §D.7.1 says call letters/slogan may be sent in PS. So: PS now, RT+ StationName.Short later (5.6). *S*
-- [ ] 1.6 **PR** Complete PI → call sign (A___, AF__, 3-letter table, B/D/E networks; none for 0xC Canada / 0xF Mexico). Port from redsea (MIT, attribute). *S*
+- [ ] 1.6 **PR** Complete PI → call sign: US (A___, AF__, 3-letter table, B/D/E networks; port from redsea, MIT, attribute) **plus Canada** from the ISED/CBC algorithm (ISED "Program information codes" page, node/587, and the "RBDS PI Code Algorithm" spreadsheet). Reverse for 0xC101-0xCEC3 with low byte ≠ 0: k = (hi-0xC1)·255 + (lo-1); prefix = CF/CH/CI/CJ/CK[k div 702]; r = k mod 702; 3rd letter = r div 27; 4th = r mod 27 (0 = none, 1-26 = A-Z). Verified round-trip on all 3,510 calls and on Calgary off-air logs (C185 CFEX, CB42 CJSW). CBC B_02-B_05 = Radio One / CBC Music / ICI Première / ICI Musique. No call for VF low-power (non-reversible table), repeaters show the parent's call, Mexico (0xF) has no method. Reimplement from the formula, don't copy the spreadsheet. *S*
 - [ ] 1.7 **PR** RDS character set (IEC 62106 E.1) → UTF-8, so accented letters show. *S-M*
 - [ ] 1.8 **PR** One band definition: voice, HMI and helper agree on 87.9-107.9 MHz, 200 kHz raster; snap or refuse otherwise. *S*
 - [ ] 1.9 **PR** Knob-hold preset save no longer overwrites preset 1 after each boot. *S*

@@ -46,7 +46,7 @@ Probe sources: kept with this log (`probe.cpp`, `verify.cpp`, `sinc.sh`).
 | RBDS PTY 24 Spanish Talk, 25 Spanish Music, 26 Hip-Hop, 27–28 unassigned, 29 Weather, 30 Emergency Test ("Test"), 31 Emergency ("ALERT !") | ✅ | NRSC-4-B Annex F Table F.2. Note: NRSC-4-B is archived; IEC 62106-9:2021 replaces it. |
 | "NRSC-G300-C recommends showing PS ahead of the PI call sign" | ⚠️ | G300-C §5.1 recommends decoding **RT+ StationName.Short** instead of back-calculating call letters from PI, because "many stations ... do not send call letters through PI codes". NRSC-4-B §D.7.1 notes call letters or a slogan may be sent in the PS. |
 | PI → call: K 0x1000–0x54A7, W 0x54A8–0x994F, 3-letter table 0x9950–0x9EFF, A___ and AF__ forms | ✅ | NRSC-4-B §D.7, Table D.7 |
-| "No call sign can be computed for Canadian/Mexican PIs" | ⚠️ | NRSC-4-B: Canada and Mexico use PI codes starting 0xC and 0xF (except certain CBC stations); it gives no conversion. ⏳ Canadian ISED/CRTC rules being checked (§6). |
+| "No call sign can be computed for Canadian/Mexican PIs" | ❌ for Canada / ✅ for Mexico | **Canada:** BPR-3 (Issue 7, May 2024) §3.13.2 requires RBDS to follow the NRSC standard but says nothing about PI. ISED's "Program information codes for radio broadcasting stations" page (node/587, B-TAC, 2007) requires a unique PI per station, sets Canada's range as C000–CFFF and CBC networks as B_02–B_09, and hosts the CBC-built "RBDS PI Code Algorithm" spreadsheet. Its formula (n = p·702 + b·27 + c + 257; PI = 0xC000 + n + ⌊(n−257)/255⌋, CF/CH/CI/CJ/CK) is reversible over C101–CEC3. Round-trip checked on all 3,510 calls; off-air Calgary logs match (C185 CFEX, C37C CFXL, C456 CHFM, C95C CJAY, CB42 CJSW, CE23 CKUA, CD59 CKMP); two re-checked by hand. Not reversible: VF low-power table; repeaters reuse the parent PI. No CRTC rule found. **Mexico (0xF):** no published allocation method found (IFT). |
 | Tuner chips expose separate quality indicators incl. "pilot SNR" | ⚠️/❌ | TEF668x: level, USN, WAM, frequency offset, modulation, IF bandwidth, stereo-pilot flag (no SNR, no pilot SNR). Si47xx (AN332): RSSI, SNR, multipath (newer revisions), frequency offset, pilot-present bit, blend %. Neither has a pilot SNR. |
 | NRSC-1-C de-emphasis: pole 2122 Hz, zero 8700 Hz, −10.00 dB at 10 kHz | ✅ | NRSC-1-C §6.2, Table 2 |
 | ~30 dB AM loss from a whip into 50 Ω | ⚠️ | First-principles: 36 dB less at 530 kHz, 26 dB less at 1700 kHz than into a car radio's ~80 pF input (10–20 pF whip). "~30 dB" holds only mid-band. |
@@ -78,5 +78,5 @@ Probe sources: kept with this log (`probe.cpp`, `verify.cpp`, `sinc.sh`).
 
 ## 6. Open
 
-- ⏳ Canadian PI code assignment (ISED Broadcasting Procedures and Rules, CRTC, any published calculator).
+- ✅ Canadian PI code assignment: resolved in §3 (ISED/CBC algorithm; no CRTC rule).
 - Not measured anywhere: SMArt v5 MW sensitivity; HF+ Discovery spurs on a vehicle 5 V rail and its current draw; TEF6686 vs SDR on the road; Taoglas MA1045 AM/FM amplifier gain and output impedance; PipeWire version in the AGL image.
