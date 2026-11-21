@@ -84,13 +84,18 @@ Details: [reports/SDR hardware and AM reception.md](reports/SDR%20hardware%20and
 - [ ] 6.8 **Issue (defer)** MW channeliser and live station list from one capture. *L*
 
 ## Phase 7: RF hardware, antennas, second receiver
-Recommended architecture: **Airspy HF+ Discovery** ($169, list $199; HF 0.5 kHz-31 MHz + VHF 64-260 MHz; HF preselector with 4 filter banks + FM-band preselector; 110/95 dB BDR; libairspyhf is BSD-3, tools GPL-2.0+) for AM/FM/NRSC-5, and the **SMArt v5 dedicated to ADS-B, AIS and NOAA** full time. SDRplay is out of the default image (closed API, no redistribution right). TEF6686 is an optional experimental backend.
+**Decided architecture (2026-11-21): two NESDR SMArt v5 dongles, one per antenna feed.** The head unit chassis has little room, and the vehicle brings two RF feeds anyway:
+- **Feed 1, AM/FM/weather band → SMArt A.** FM and weather band (162.400-162.550 MHz) through the tuner; AM by direct sampling on the Q branch, which shares the SMA input through the dongle's diplexer. One band at a time: this is the listening source.
+- **Feed 2, ADS-B 1090 MHz and AIS 162 MHz → SMArt B.** 1090 and 162 MHz are too far apart for one capture, so Aircraft and Ships take turns on this dongle unless one is chosen to run full time.
+
+The Airspy HF+ Discovery recommendation in the hardware report is set aside: it would add a third, larger receiver without removing the need for a dongle on feed 2. Its better AM/FM front end remains the reference for what the SMArt gives up (preselection, 110/95 dB BDR vs an 8-bit converter), so front-end filtering and gain control (Phases 3-4, 7.2) matter more. SDRplay stays out (closed API, no redistribution right). TEF6686 stays an optional experiment.
 - [ ] 7.1 **PR** Antenna and front-end guide in the docs (per-service filters, 50 Ω vs high-Z AM loss, 12 V phantom, coax losses, RV noise, why a 200 MHz LPF doesn't help). *S*
-- [ ] 7.2 **Issue** Open-hardware MW band-pass: 520-1710 kHz, IL ≤ 2 dB, ≥ 60 dB at 26-30 MHz, ≥ 70 dB at 54-230 MHz. *M*
+- [ ] 7.2 **Issue** Open-hardware MW band-pass: 520-1710 kHz, IL ≤ 2 dB, ≥ 60 dB at 26-30 MHz, ≥ 70 dB at 54-230 MHz. *M* **With one shared AM/FM/WB feed it can't sit in line** (it would block FM and weather band): it needs its own diplexer, MW band-pass on the HF arm and FM/weather on the VHF arm, recombined into SMArt A, or a GPIO-switched bypass. Check what the dongle's own diplexer already rejects first (6.1).
 - [ ] 7.3 **Issue** AM active antenna / JFET buffer (> 100 kΩ, < 10 pF in, 50 Ω out) + GPIO-switched DC injector. Recovers ~30 dB. *M*
-- [ ] 7.4 **Issue** Multi-device support: open SDRs by USB serial per service (helpers always open device 0 today). Unlocks every second receiver. *M*
+- [ ] 7.4 **Issue** Multi-device support: open SDRs by USB serial per service (helpers always open device 0 today). **Required for the two-dongle design**: write distinct serials to the two SMArt v5s (`rtl_eeprom -s`), map radio and weather to A, Aircraft and Ships to B. *M*
 - [ ] 7.5 **PR + bench** USB power (`usb_max_current_enable=1`), filtered 5 V, measure draw per device. *S*
-- [ ] 7.6 **Issue** Airspy HF+ Discovery backend (custom libairspyhf Yocto recipe, check licence; 3969/4096 resampler to 744,187.5 S/s). *L*
+- [ ] ~~7.6 Airspy HF+ Discovery backend~~ dropped with the two-SMArt decision; notes kept in the hardware report.
+- [ ] 7.6a **Issue** Sharing SMArt B between Aircraft and Ships: which runs when both are open, and how the HMI shows the one that's paused. *S-M*
 - [ ] 7.7 **Issue** 162 MHz and 1090 MHz paths: FM band-stop or 155-164 MHz BPF; SAW-filtered 1090 LNA at the antenna; LMR-240. *S-M*
 - [ ] 7.8 **Issue (experimental)** TEF6686 tuner backend via an MCU running the existing GPL firmware as a separate work; Godwit implements a protocol client only. *L*
 - Antenna note: **Taoglas MA1045** (permanent roof mount: Ø19 mm centre hole + two Ø7.2 mm holes 55 mm apart) covers AM/FM/weather band (amplified, specs unpublished), 2× GNSS (L1 + BeiDou B1), SiriusXM, LTE on one port (no band 71/41, no C-band, no MIMO); **not 1090 MHz**. Bench-test its amplified AM/FM output into the SDR before choosing it.
@@ -113,10 +118,11 @@ Naming rule: say "NRSC-5" / "IBOC" / "supplemental program services (SPS)"; neve
 - ±2 Hz pilot tolerance: confirm in ITU-R BS.450
 - ~~NRSC-1-C de-emphasis constants~~ settled: pole 2122 Hz, zero 8700 Hz (6.4)
 - SMArt v5 MW sensitivity and alias levels (6.1, bench)
-- HF+ Discovery spurs on a vehicle 5 V rail and its current draw (7.5)
+- Two SMArt v5s on one vehicle 5 V rail: total draw (270-330 mA each per Nooelec) and spurs (7.5)
+- Antenna for feed 2: one dual-band 162/1090 MHz antenna, or two antennas through a combiner? Neither Taoglas combo covers 1090 MHz.
 - TEF6686 vs SDR on the road: nobody has measured it (7.8)
 - Taoglas MA1045 AM/FM amplifier gain and output impedance (ask Taoglas or bench-test)
 - Which hardware you want to buy first (see the report's Good/Better/Best tiers)
 - RT+ application ID (expected 0x4BD7): confirm before 5.6
-- Full IEC 62106 E.1 character table source (for 1.7)
+- ~~Full IEC 62106 E.1 character table source~~ settled: IEC 62106-4:2018 Table 4 (1.7)
 - Hardware on hand: which dongle(s) and antenna you have for real-air tests
