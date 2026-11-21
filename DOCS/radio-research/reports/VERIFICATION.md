@@ -70,6 +70,9 @@ Probe sources: kept with this log (`probe.cpp`, `verify.cpp`, `sinc.sh`).
 | Taoglas MA1045 is a single-hole mount | ❌ | Permanent roof mount: Ø19 mm centre hole + two Ø7.2 mm holes 55 mm apart (datasheet p.28) |
 | Taoglas MA1045 bands | ✅ | Datasheet SPE-19-8-095-A: cellular 698–803/824–894/880–960/1710–1880/1850–1990/1920–2170/2300–2500 MHz; GPS L1 + BeiDou B1 ×2; SiriusXM 2320–2345; AM/FM/WB amplified (no published figures); 300 mm RG-174 |
 
+| Taoglas MA1047 bands | ✅ | Datasheet SPE-24-8-285-C (MA1047.A.LBICGTT.001): shark fin 96.5 × 80 × 60 mm, IP67, staggered RG-178, Fakra. Cellular ×2 (MIMO): 617–698, 698–806, 824–960, 1427–1518, 1710–2200, 2300–2690, 3300–5000, 5150–5925 MHz; port 1 efficiency 17–48 %, port 2 5–37 % (6.6 % at 3.3–5 GHz on a ground plane). Wi-Fi ×2: 2400–2500 and 5150–5850 MHz. GNSS ×1 active: GPS L1, GLONASS G1, Galileo E1, BeiDou B1 + SBAS; LNA 30 dB gain, 2.2 dB NF, 39 mA. "Active AM/FM" + WB and DAB ports: **no figures published**. No SiriusXM. 1090 MHz not covered. |
+| MA1047 out of stock until May 2027 | ⏳ | User's information; not independently checked |
+
 ## 5. Corrections applied
 
 - Issue draft: pilot-PLL bullet replaced by the measured discriminator-droop fix; RDS wording per §3; tuner-chip indicators per §3; AM-loss figures per §3; AGC claim attributed to HB9AJG; "bypasses the tuner"; no V4 recommendation; Taoglas "permanent roof mount"; HF+ "HF and FM-band preselection"; audio-pipe wording covers both overflow and underrun.

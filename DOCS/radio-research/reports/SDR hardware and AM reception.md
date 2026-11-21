@@ -151,6 +151,7 @@ ADS-B needs its own antenna:
   - **Cellular (one port, Fakra D):** 698–803, 824–894, 880–960, 1710–1880, 1850–1990, 1920–2170, 2300–2500 MHz; 36–51 % efficiency. No 600 MHz (band 71), no 2500–2700 MHz (band 41), no 3.3–3.8 GHz, no second port for MIMO.
   - **GNSS (two ports, Fakra C):** GPS L1 1575.42 ± 1.023 MHz and BeiDou B1 1561.098 ± 2.046 MHz; +3 dBi at zenith; LNA and supply not stated. No GLONASS, no L5.
   - **SiriusXM:** 2320–2345 MHz. **Cables:** 300 mm RG-174 pigtails. IP67, −40 to 85 °C, 165 × 97 × 61 mm.
+  - **Sibling model, MA1047** (datasheet SPE-24-8-285-C, read 2026-11-21; [PDF](https://www.taoglas.com/datasheets/MA1047.A.LBICGTT.001.pdf)): 7-in-1 shark fin (96.5 × 80 × 60 mm) that drops SiriusXM and adds 5G and Wi-Fi. 2× cellular MIMO 617–5925 MHz (band 71, band 41 and C-band covered; port 2 is weak, 6.6 % efficiency at 3.3–5 GHz); 2× Wi-Fi; one active multi-constellation GNSS port (30 dB LNA); active AM/FM/WB and DAB ports with no published figures; no 1090 MHz. Reported out of stock until May 2027.
   - **Fit for Godwit:** covers AM/FM/weather band and GNSS, probably AIS (not listed); **not** 1090 MHz. The undocumented amplified AM/FM output must be bench-tested into the SDR (overload risk on FM with an 8-bit receiver; unknown AM output impedance).
 
 ## AM works on the current dongle today, within hard limits

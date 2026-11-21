@@ -94,6 +94,7 @@ Recommended architecture: **Airspy HF+ Discovery** ($169, list $199; HF 0.5 kHz-
 - [ ] 7.7 **Issue** 162 MHz and 1090 MHz paths: FM band-stop or 155-164 MHz BPF; SAW-filtered 1090 LNA at the antenna; LMR-240. *S-M*
 - [ ] 7.8 **Issue (experimental)** TEF6686 tuner backend via an MCU running the existing GPL firmware as a separate work; Godwit implements a protocol client only. *L*
 - Antenna note: **Taoglas MA1045** (permanent roof mount: Ø19 mm centre hole + two Ø7.2 mm holes 55 mm apart) covers AM/FM/weather band (amplified, specs unpublished), 2× GNSS (L1 + BeiDou B1), SiriusXM, LTE on one port (no band 71/41, no C-band, no MIMO); **not 1090 MHz**. Bench-test its amplified AM/FM output into the SDR before choosing it.
+- Antenna note: **Taoglas MA1047** (7-in-1 shark fin, 96.5 × 80 × 60 mm, datasheet SPE-24-8-285-C): 2× 5G/4G MIMO 617-5925 MHz (band 71, 41, C-band; second port weak, 6-7 % at 3.3-5 GHz), 2× Wi-Fi 2.4/5 GHz, 1× active GNSS (L1/G1/E1/B1 + SBAS, 30 dB LNA), active AM/FM/WB (no specs), DAB (not used in North America); no SiriusXM; **not 1090 MHz** (cellular gap 960-1427 MHz). Out of stock until May 2027 (per your note, not confirmed). Same AM/FM bench test applies.
 
 ## Phase 8: NRSC-5 IBOC digital radio
 Naming rule: say "NRSC-5" / "IBOC" / "supplemental program services (SPS)"; never the trademarked brand name or brand-style channel labels, in code, UI, docs, issues or PRs.
