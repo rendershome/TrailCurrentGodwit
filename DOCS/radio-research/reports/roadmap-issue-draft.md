@@ -2,6 +2,8 @@ Title: Radio: proposed roadmap for AM/FM reception quality
 
 Hi! I'm a long-time radio broadcast engineer (I opened #1 to get my bearings) and I'd like to help make Godwit's radio as good as a factory car radio, and better where an SDR allows. Before sending pull requests, I wanted to share where I'd like to go and ask how you'd prefer to receive this work.
 
+I've ordered the same SDR the project uses (the Nooelec NESDR SMArt v5) and one of the Taoglas combination antennas mentioned below, and I have the test equipment to measure them, so I can check each change on real hardware as well as in tests.
+
 I've read through `radio/` and the HMI radio code. The DSP core is in good shape: pilot-locked 38/57 kHz regeneration, matched L+R/L−R filtering and about 53 dB of pilot rejection. The main limits are in how the signal is measured and in a few details. Here's what I'd propose, in order:
 
 **1. Measurement first**
@@ -46,7 +48,7 @@ This changes the `status` line, so I'd want to agree the fields with you first.
   - two GNSS feeds (GPS L1 and BeiDou B1) for navigation and the position the Aircraft, Ships and Weather apps use;
   - cellular (698–960 and 1710–2500 MHz) and SiriusXM.
   
-  Its sibling, the MA1047 shark fin, swaps SiriusXM for two 5G/4G MIMO ports (617–5925 MHz) and two Wi-Fi ports, with one multi-constellation GNSS port. Neither covers 1090 MHz, so ADS-B would still need its own antenna. Neither datasheet publishes the AM/FM amplifier's gain or output impedance, so I'd bench-test them into the SDR first, to check AM level and FM overload, before suggesting it in the docs.
+  Its sibling, the MA1047 shark fin, swaps SiriusXM for two 5G/4G MIMO ports (617–5925 MHz) and two Wi-Fi ports, with one multi-constellation GNSS port. Neither covers 1090 MHz, so ADS-B would still need its own antenna. Neither datasheet publishes the AM/FM amplifier's gain or output impedance, so I'll bench-test the one I've ordered into the SDR first, to check AM level and FM overload, before suggesting it in the docs.
 - AM. The README says AM would need an upconverter, but Nooelec's datasheet gives the NESDR SMArt v5 a 0.1–25 MHz direct-sampling range (Q branch), which bypasses the tuner, so medium wave should work with the current dongle. Quality will be limited by the lack of front-end filtering and the 8-bit converter; an upconverter, or a receiver with its own HF preselection, would do better. That would be its own discussion: synchronous AM, bandwidth choices, NRSC-1 de-emphasis, and switching the dongle between modes.
 
 **Questions for you**
