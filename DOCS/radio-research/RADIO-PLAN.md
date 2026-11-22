@@ -9,6 +9,9 @@ Item numbers match the report's work-plan tables.
 - **PR** = small, verifiable fix we can open directly. **Issue** = changes behaviour or design; propose it to the maintainers with the report's parameters before writing code.
 - Every DSP change gets a test in `radio/tests/fmreceiver_test.cpp` that fails before and passes after.
 - Don't stack too many open PRs on the maintainers at once: aim for 2-3 in review.
+- Follow the platform's contribution guide ([TrailCurrentDocumentation `07_Development/CONTRIBUTING.md`](https://github.com/trailcurrentoss/TrailCurrentDocumentation/blob/main/07_Development/CONTRIBUTING.md)): MIT licence for contributions; 100% open source (no proprietary components or closed-source dependencies, which is why SDRplay is out); offline first; "ask in an issue first" when unsure. Its "branch from `develop`" doesn't apply here: Godwit only has `main`.
+- PR descriptions use its template sections: **Summary**, **Why This Change?**, **Design Considerations**, **Testing**, **Offline Testing**, **Documentation**, then our footer line.
+- Related: **Playbill** (in-rig entertainment head, Radxa Q6A, [TrailCurrentPlaybill](https://github.com/trailcurrentoss/TrailCurrentPlaybill)) has its own RTL-SDR radio, FM/AM/scanner via `rtl_fm` piped to `aplay` (mono, no RDS). Separate product, no shared code with Godwit today; `godwit-radio` could serve it later.
 
 **Status key:** `[ ]` to do · `[~]` in progress · `[x]` done · `[-]` dropped
 
