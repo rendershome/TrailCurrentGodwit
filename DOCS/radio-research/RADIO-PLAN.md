@@ -142,4 +142,8 @@ Naming rule: say "NRSC-5" / "IBOC" / "supplemental program services (SPS)"; neve
 - Which hardware you want to buy first (see the report's Good/Better/Best tiers)
 - RT+ application ID (expected 0x4BD7): confirm before 5.6
 - ~~Full IEC 62106 E.1 character table source~~ settled: IEC 62106-4:2018 Table 4 (1.7)
-- Hardware on hand: which dongle(s) and antenna you have for real-air tests
+- ~~Hardware on hand~~ settled: **test bench = the project's Raspberry Pi 5 build** (video 2026-11-20; `os/boards/rpi5-dsi`): Pi 5 8 GB on NVMe, Waveshare 10.1" DSI panel, 2-CH CAN FD HAT, two ESP32-S3 knob dials, Sound Blaster Play! 3 USB audio, 12 V bench supply; plus the NESDR SMArt v5 and a Taoglas combination antenna on order, and your own test equipment. Radio notes for it:
+  - **USB ports:** the Pi 5 has four; the two dials and the sound card take three. One SMArt fits; the second needs a powered hub.
+  - **USB current:** the image sets `usb_max_current_enable=1` (1.6 A total for the USB ports, assuming a 5 A supply). Two SMArts are 0.54-0.66 A by Nooelec's figures, plus the dials and sound card: measure the total (7.5). A powered hub for the dongles takes them off this budget.
+  - **Audio clock:** audio leaves through the Play! 3's own clock, so the dongle-vs-audio drift (4.3) is real on this bench. Good place to measure it.
+  - **RF noise:** Pi 5, DSI panel and switch-mode supplies sit right beside the dongle. Expect MW (AM) to suffer most. Put the SMArt on a USB extension away from the stack, ferrites on the leads, and capture a noise baseline with the antenna disconnected (useful for 6.1 and the noise blanker, 3.x).
