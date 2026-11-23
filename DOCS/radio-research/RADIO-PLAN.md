@@ -9,7 +9,7 @@ Item numbers match the report's work-plan tables.
 - **PR** = small, verifiable fix we can open directly. **Issue** = changes behaviour or design; propose it to the maintainers with the report's parameters before writing code.
 - Every DSP change gets a test in `radio/tests/fmreceiver_test.cpp` that fails before and passes after.
 - Don't stack too many open PRs on the maintainers at once: aim for 2-3 in review.
-- Follow the platform's contribution guide ([TrailCurrentDocumentation `07_Development/CONTRIBUTING.md`](https://github.com/trailcurrentoss/TrailCurrentDocumentation/blob/main/07_Development/CONTRIBUTING.md)): MIT licence for contributions; 100% open source (no proprietary components or closed-source dependencies, which is why SDRplay is out); offline first; "ask in an issue first" when unsure. Its "branch from `develop`" doesn't apply here: Godwit only has `main`.
+- Follow the platform's contribution guide ([TrailCurrentDocumentation `07_Development/CONTRIBUTING.md`](https://github.com/trailcurrentoss/TrailCurrentDocumentation/blob/main/07_Development/CONTRIBUTING.md)): MIT licence for contributions; 100% open source (no proprietary components or closed-source dependencies, which is why SDRplay can't ship in the image; it stays a user-installed backup, 7.6c); offline first; "ask in an issue first" when unsure. Its "branch from `develop`" doesn't apply here: Godwit only has `main`.
 - PR descriptions use its template sections: **Summary**, **Why This Change?**, **Design Considerations**, **Testing**, **Offline Testing**, **Documentation**, then our footer line.
 - Related: **Playbill** (in-rig entertainment head, Radxa Q6A, [TrailCurrentPlaybill](https://github.com/trailcurrentoss/TrailCurrentPlaybill)) has its own RTL-SDR radio, FM/AM/scanner via `rtl_fm` piped to `aplay` (mono, no RDS). Separate product, no shared code with Godwit today; `godwit-radio` could serve it later.
 
@@ -91,7 +91,7 @@ Details: [reports/SDR hardware and AM reception.md](reports/SDR%20hardware%20and
 - **Feed 1, AM/FM/weather band → SMArt A.** FM and weather band (162.400-162.550 MHz) through the tuner; AM by direct sampling on the Q branch, which shares the SMA input through the dongle's diplexer. One band at a time: this is the listening source.
 - **Feed 2, ADS-B 1090 MHz and AIS 162 MHz → SMArt B.** 1090 and 162 MHz are too far apart for one capture, so Aircraft and Ships take turns on this dongle unless one is chosen to run full time.
 
-The Airspy HF+ Discovery recommendation in the hardware report is set aside: it would add a third, larger receiver without removing the need for a dongle on feed 2. Its better AM/FM front end remains the reference for what the SMArt gives up (preselection, 110/95 dB BDR vs an 8-bit converter), so front-end filtering and gain control (Phases 3-4, 7.2) matter more. SDRplay stays out (closed API, no redistribution right). TEF6686 stays an optional experiment.
+The Airspy HF+ Discovery recommendation in the hardware report is set aside: it would add a third, larger receiver without removing the need for a dongle on feed 2. Its better AM/FM front end remains the reference for what the SMArt gives up (preselection, 110/95 dB BDR vs an 8-bit converter), so front-end filtering and gain control (Phases 3-4, 7.2) matter more. SDRplay can't ship in the image (closed API, no redistribution right) but is kept as the backup receiver if the SMArts fall short (7.6c). TEF6686 stays an optional experiment.
 - [ ] 7.1 **PR** Antenna and front-end guide in the docs (per-service filters, 50 Ω vs high-Z AM loss, 12 V phantom, coax losses, RV noise, why a 200 MHz LPF doesn't help). *S*
 - [ ] 7.2 **Issue** Open-hardware MW band-pass: 520-1710 kHz, IL ≤ 2 dB, ≥ 60 dB at 26-30 MHz, ≥ 70 dB at 54-230 MHz. *M* **With one shared AM/FM/WB feed it can't sit in line** (it would block FM and weather band): it needs its own diplexer, MW band-pass on the HF arm and FM/weather on the VHF arm, recombined into SMArt A, or a GPIO-switched bypass. Check what the dongle's own diplexer already rejects first (6.1).
 - [ ] 7.3 **Issue** AM active antenna / JFET buffer (> 100 kΩ, < 10 pF in, 50 Ω out) + GPIO-switched DC injector. Recovers ~30 dB. *M*
@@ -108,6 +108,11 @@ The Airspy HF+ Discovery recommendation in the hardware report is set aside: it 
     - The maintainers decide whether the dependency is worth it.
 - [ ] 7.5 **PR + bench** USB power (`usb_max_current_enable=1`), filtered 5 V, measure draw per device. *S*
 - [ ] ~~7.6 Airspy HF+ Discovery backend~~ dropped with the two-SMArt decision; notes kept in the hardware report.
+- [ ] 7.6c **Backup (fork/bench only unless the maintainers agree)** SDRplay RSP as the fallback receiver if the SMArts fail the bench tests (thermal, AM sensitivity, overload, PLL lock). *M*
+  - Why it's the backup: 14-bit converter, built-in preselection filters, MW/HF without direct sampling; the RSPduo also gives two tuners in one box (one could cover AM/FM/WB, the other 162 MHz).
+  - The catch: SDRplay's API library is closed source with no redistribution right, so it can't go in the Godwit image or be a project dependency (CONTRIBUTING: 100% open source). The route that keeps Godwit open is the SoapySDR option in 7.4: Godwit talks only to SoapySDR, and an owner installs SDRplay's API and the MIT SoapySDRPlay3 plugin themselves.
+  - Costs: needs 7.4's SoapySDR port first; its sample rates differ from the RTL's 1.14 MS/s design, so the helpers need a resampler; RSPs are bigger than a SMArt and draw more, which matters for the chassis space that drove the two-SMArt decision.
+  - Before relying on it: confirm current SDRplay API support for Linux on arm64 (Pi 5) and its licence terms, and measure an RSP's draw and heat beside the SMArt.
 - [ ] 7.6a **Issue** Sharing SMArt B between Aircraft and Ships: which runs when both are open, and how the HMI shows the one that's paused. *S-M*
 - [ ] 7.6b **Issue (option)** AIS and weather band together on SMArt B, so weather can be watched while SMArt A plays the radio. Both AIS channels (161.975, 162.025 MHz) and all seven NOAA channels (162.400-162.550 MHz) fit in 575 kHz. Today `godwit-ais` and `godwit-wxradio` each tune their own 288 kS/s block. A combined helper would capture 1.152 MS/s (4 × 288k) centred near 162.2625 MHz, so the DC spike falls between channels (137.5 kHz from 162.400, 237.5 kHz from 162.025), then mix and decimate by 4 into the existing AIS and weather DSP unchanged. Weather would then also need feed 2's antenna to hear 162.4-162.55 MHz (an AIS antenna does). *M*
   - Only while Ships holds SMArt B; Aircraft (1090 MHz) still takes turns with it (7.6a).
@@ -136,13 +141,19 @@ Naming rule: say "NRSC-5" / "IBOC" / "supplemental program services (SPS)"; neve
 - ~~NRSC-1-C de-emphasis constants~~ settled: pole 2122 Hz, zero 8700 Hz (6.4)
 - SMArt v5 MW sensitivity and alias levels (6.1, bench)
 - Two SMArt v5s on one vehicle 5 V rail: total draw (270-330 mA each per Nooelec) and spurs (7.5)
+- **SMArt v5 heat in the chassis** (first unit received 2026-11-23: FM works, runs very hot). About 1.5 W each, ~3 W for two; the aluminium case is the heatsink. Risks in a closed head unit: heat build-up beside the Pi 5, oscillator drift (matters more for weather band and AIS than FM/AM), and tuner PLL unlock when hot (mostly at 1090 MHz, so SMArt B). Bench procedure:
+  1. Thermocouple on the case for an hour, first in open air, then in an enclosure close to the chassis volume.
+  2. Current draw on a USB meter, bias-tee off and on.
+  3. Frequency offset of a known FM carrier (or the 19 kHz pilot) over the warm-up, and a PLL-lock check at 1090 MHz when hot.
+  - Mounting to try: clamp each dongle to the chassis wall with a thermal pad, keep it away from the Pi's SoC on a short USB extension, never stack the two. Grounding the case to the chassis may also help RF noise (see the bench RF-noise note).
+  - If the SMArts can't be made to run cool and stable enough, that triggers the backup in 7.6c.
 - Antenna for feed 2: one dual-band 162/1090 MHz antenna, or two antennas through a combiner? Neither Taoglas combo covers 1090 MHz.
 - TEF6686 vs SDR on the road: nobody has measured it (7.8)
 - Taoglas MA1045 AM/FM amplifier gain and output impedance (ask Taoglas or bench-test)
 - Which hardware you want to buy first (see the report's Good/Better/Best tiers)
 - RT+ application ID (expected 0x4BD7): confirm before 5.6
 - ~~Full IEC 62106 E.1 character table source~~ settled: IEC 62106-4:2018 Table 4 (1.7)
-- ~~Hardware on hand~~ settled: **test bench = the project's Raspberry Pi 5 build** (video 2026-11-20; `os/boards/rpi5-dsi`): Pi 5 8 GB on NVMe, Waveshare 10.1" DSI panel, 2-CH CAN FD HAT, two ESP32-S3 knob dials, Sound Blaster Play! 3 USB audio, 12 V bench supply; plus the NESDR SMArt v5 and a Taoglas combination antenna on order, and your own test equipment. Radio notes for it:
+- ~~Hardware on hand~~ settled: **test bench = the project's Raspberry Pi 5 build** (video 2026-11-20; `os/boards/rpi5-dsi`): Pi 5 8 GB on NVMe, Waveshare 10.1" DSI panel, 2-CH CAN FD HAT, two ESP32-S3 knob dials, Sound Blaster Play! 3 USB audio, 12 V bench supply; plus the NESDR SMArt v5 (first unit received 2026-11-23, FM checked) and a Taoglas combination antenna on order, and your own test equipment. Radio notes for it:
   - **USB ports:** the Pi 5 has four; the two dials and the sound card take three. One SMArt fits; the second needs a powered hub.
   - **USB current:** the image sets `usb_max_current_enable=1` (1.6 A total for the USB ports, assuming a 5 A supply). Two SMArts are 0.54-0.66 A by Nooelec's figures, plus the dials and sound card: measure the total (7.5). A powered hub for the dongles takes them off this budget.
   - **Audio clock:** audio leaves through the Play! 3's own clock, so the dongle-vs-audio drift (4.3) is real on this bench. Good place to measure it.
